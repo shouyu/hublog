@@ -1,3 +1,5 @@
+require 'pp'
+
 class ArticlesController < ApplicationController
   protect_from_forgery :expect => [:hook]
 
@@ -13,8 +15,9 @@ class ArticlesController < ApplicationController
     @article = Article.where(id: params[:id]).first
     if @article.content.blank?
       contents = Octokit.contents(Hublog::Application.config.repo, path: @article.name)
-      content = contents.encoding == "base64" ? Base64.decode64(contents.content) : contents.content
-      @article.content = Octokit.markdown(content)
+      content = contents.encoding == "base64" ? Base64.decode64(contents.content).force_encoding('utf-8') : contents.content
+      content = Octokit.markdown(content)
+      @article.content = content.force_encoding('utf-8')
       @article.save!
     end
   end
