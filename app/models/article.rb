@@ -36,6 +36,7 @@ class Article < ActiveRecord::Base
           article.commit_id = commit[:sha]
           article.commit_time = DateTime.parse(commit[:commit][:committer][:date])
           article.save!
+          Rails.cache.delete("article#{article.id}")
         when "removed"
           article = Article.where(name: file[:filename]).first
           article.destroy unless article.nil?

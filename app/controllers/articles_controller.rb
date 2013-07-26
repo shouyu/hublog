@@ -12,13 +12,16 @@ class ArticlesController < ApplicationController
   # GET /articles/1
   # GET /articles/1.json
   def show
-    @article = Article.where(id: params[:id]).first
+    @article = Rails.cache.fetch("article#{params[:id]}") do
+      Article.where(id: params[:id]).first
+    end
     if @article.content.blank?
       contents = Octokit.contents(Hublog::Application.config.repo, path: @article.name)
       content = contents.encoding == "base64" ? Base64.decode64(contents.content).force_encoding('utf-8') : contents.content
       content = Octokit.markdown(content)
       @article.content = content.force_encoding('utf-8')
       @article.save!
+      Rails.cache.write("article#{params[:id]}", @article)
     end
   end
 
