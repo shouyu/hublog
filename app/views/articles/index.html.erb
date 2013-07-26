@@ -1,0 +1,25 @@
+<header>
+  <div class="page-header">
+    <h1>
+      Hublog
+    </h1>
+    <p>Sync with <%= link_to "#{Hublog::Application.config.repo}", "https://github.com/#{Hublog::Application.config.repo}" %></p>
+  </div>
+</header>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th style="width: 100px">Date</th>
+      <th>Title</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @articles.each do |article| %>
+      <tr>
+        <td><%= article.created_time.localtime.strftime("%Y-%m-%d") %></td>
+        <td><%= link_to article.title, article %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
